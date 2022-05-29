@@ -1,5 +1,5 @@
 # Anime Database Retriever 2.0
-Python retriever that retrieves every anime from 1940 to 2022 into a SQLite database (supported by AnilistPython).
+Python retriever that retrieves the data of every anime from 1940 to 2022 into a SQLite database (supported by AnilistPython).
 
 ![text](https://i.imgur.com/hgL9yeS.png)
 
