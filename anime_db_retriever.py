@@ -7,6 +7,7 @@ from datetime import datetime
 
 import AnilistPython
 from AnilistPython import Anilist
+from sympy import sec
 
 class AniDatabaseRetriever:
     def __init__(self):
@@ -67,6 +68,8 @@ class AniDatabaseRetriever:
         self.db_conn.commit()
 
     def initialize_values(self):
+        db_ret.create_database()
+
         curr_record_id = 0
         prev_record = self.db_conn.execute("SELECT * FROM Anime_Records ORDER BY id DESC LIMIT 1").fetchall()
         if len(prev_record) > 0: curr_record_id = prev_record[0][0] + 1
@@ -78,6 +81,9 @@ class AniDatabaseRetriever:
         if len(prev_record) > 0: curr_record_id = prev_record[0][0] + 1
 
         anime_records = []
+
+        ct = 0
+
         while curr_record_id < self.MAX_ANIME_ID:
 
             # bulk writes to db for every 100 record retrieved
@@ -111,14 +117,15 @@ class AniDatabaseRetriever:
             curr_record_id += 1
             time.sleep(self.RATELIMIT_OFFSET)
 
+            ct += 1
+            if ct == 3000:
+                return
+
     def convert_time(self, seconds):
-        seconds = seconds % (24 * 3600)
-        hour = seconds // 3600
-        seconds %= 3600
-        minutes = seconds // 60
-        seconds %= 60
+        m, s = divmod(seconds, 60)
+        h, m = divmod(m, 60)
         
-        return "%d hr, %02d min, %02d secs" % (hour, minutes, seconds)
+        return "%d hr, %02d min, %02d secs" % (h, m, s)
 
 
 if __name__ == "__main__":
@@ -134,14 +141,17 @@ if __name__ == "__main__":
     Internal Support: AnilistPython V{db_ret.ANILISTPYTHON_VERSION}
     Ratelimit Offset: {db_ret.RATELIMIT_OFFSET} secs
     SQL Bulk Writes Threshold: {db_ret.BULK_WRITE_THRESHOLD} records
-    Estimated Time Consumption: {db_ret.convert_time(db_ret.MAX_ANIME_ID * db_ret.RATELIMIT_OFFSET - db_ret.initialize_values())} 
+    Estimated Time Consumption: {db_ret.convert_time(db_ret.MAX_ANIME_ID * (db_ret.RATELIMIT_OFFSET + 0.14) - db_ret.initialize_values())} 
     """)
     l = ['='] * (len(header) - 2)
     print("".join(l) + "\n\n")
     
     time.sleep(5)
     db_ret.create_database()
+
+    s = time.time()
     db_ret.retrieve_anime_data()
+    print(f"avg: {((time.time() - s) / 3000)}")
 
     print("All records have been successfully retrieved... Program Terminating...")
     print(f"Time Consumption: [{db_ret.convert_time(time.time() - start)}]")
