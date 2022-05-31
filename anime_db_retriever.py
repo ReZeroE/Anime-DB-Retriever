@@ -12,7 +12,7 @@ from sympy import sec
 class AniDatabaseRetriever:
     def __init__(self):
         self.MAX_ANIME_ID = 200000
-        self.BULK_WRITE_THRESHOLD = 150
+        self.BULK_WRITE_THRESHOLD = 10
         self.RETRIEVER_VERSION = 'V2.0-SQLite3'
         self.RATELIMIT_OFFSET = 0.75
         self.ANILISTPYTHON_VERSION = "0.1.3"
@@ -82,8 +82,6 @@ class AniDatabaseRetriever:
 
         anime_records = []
 
-        ct = 0
-
         while curr_record_id < self.MAX_ANIME_ID:
 
             # bulk writes to db for every 100 record retrieved
@@ -116,10 +114,6 @@ class AniDatabaseRetriever:
 
             curr_record_id += 1
             time.sleep(self.RATELIMIT_OFFSET)
-
-            ct += 1
-            if ct == 3000:
-                return
 
     def convert_time(self, seconds):
         m, s = divmod(seconds, 60)
