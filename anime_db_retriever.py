@@ -7,7 +7,6 @@ from datetime import datetime
 
 import AnilistPython
 from AnilistPython import Anilist
-from sympy import sec
 
 class AniDatabaseRetriever:
     def __init__(self):
