@@ -10,7 +10,7 @@ from AnilistPython import Anilist
 
 class AniDatabaseRetriever:
     def __init__(self):
-        self.MAX_ANIME_ID = 200000
+        self.MAX_ANIME_ID = 300000
         self.BULK_WRITE_THRESHOLD = 10
         self.RETRIEVER_VERSION = 'V2.0-SQLite3'
         self.RATELIMIT_OFFSET = 0.75
